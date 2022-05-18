@@ -17,7 +17,7 @@
         {
             "name": "Sonata Community",
             "homepage": "https://github.com/sonata-project/SonataPageBundle/contributors"
-        },
+        }
     ],
     "homepage": "https://docs.sonata-project.org/projects/SonataPageBundle",
     "require": {

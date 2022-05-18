@@ -21,6 +21,7 @@ use Sonata\PageBundle\Model\BlockInteractorInterface;
 use Sonata\PageBundle\Model\PageManagerInterface;
 use Sonata\PageBundle\Model\SiteManagerInterface;
 use Sonata\PageBundle\Page\TemplateManagerInterface;
+use Sonata\PageBundle\Site\SiteSelectorInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +47,7 @@ class PageAdminController extends Controller
                 'sonata.page.block_interactor' => BlockInteractorInterface::class,
                 Pool::class => Pool::class,
                 'sonata.block.manager' => BlockServiceManagerInterface::class,
+                'sonata.page.site.selector' => SiteSelectorInterface::class
             ] + parent::getSubscribedServices();
     }
 

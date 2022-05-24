@@ -133,7 +133,7 @@ class BlockContextManager implements BlockContextManagerInterface
         return $blockContext;
     }
 
-    private function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block): void
+    protected function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block): void
     {
         // defaults for all blocks
         $optionsResolver->setDefaults([

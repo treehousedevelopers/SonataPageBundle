@@ -16,7 +16,6 @@ namespace Sonata\PageBundle\Command;
 use Sonata\Doctrine\Model\ManagerInterface;
 use Sonata\NotificationBundle\Backend\BackendInterface;
 use Sonata\PageBundle\CmsManager\CmsPageManager;
-use Sonata\PageBundle\CmsManager\DecoratorStrategyInterface;
 use Sonata\PageBundle\Listener\ExceptionListener;
 use Sonata\PageBundle\Model\PageManagerInterface;
 use Sonata\PageBundle\Model\SiteManagerInterface;
@@ -31,60 +30,50 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 abstract class BaseCommand extends Command
 {
-    /**
-     * @return SiteManagerInterface
-     */
-    public function getSiteManager()
-    {
-        return $this->getContainer()->get('sonata.page.manager.site');
-    }
+    /** @var SiteManagerInterface */
+    protected $siteManager;
 
-    /**
-     * @return PageManagerInterface
-     */
-    public function getPageManager()
-    {
-        return $this->getContainer()->get('sonata.page.manager.page');
-    }
+    /** @var PageManagerInterface */
+    protected $pageManager;
 
-    /**
-     * @return ManagerInterface
-     */
-    public function getBlockManager()
-    {
-        return $this->getContainer()->get('sonata.page.manager.block');
-    }
+    /** @var SnapshotManagerInterface */
+    protected $snapshotManager;
 
-    /**
-     * @return SnapshotManagerInterface
-     */
-    public function getSnapshotManager()
-    {
-        return $this->getContainer()->get('sonata.page.manager.snapshot');
-    }
+    /** @var ManagerInterface */
+    protected $blockManager;
 
-    /**
-     * @return CmsPageManager
-     */
-    public function getCmsPageManager()
-    {
-        return $this->getContainer()->get('sonata.page.cms.page');
-    }
+    /** @var CmsPageManager */
+    protected $cmsPageManager;
 
-    /**
-     * @return DecoratorStrategyInterface
-     */
-    public function getDecoratorStrategy()
-    {
-        return $this->getContainer()->get('sonata.page.decorator_strategy');
-    }
+    /** @var ExceptionListener */
+    protected $exceptionListener;
 
-    /**
-     * @return ExceptionListener
-     */
-    public function getErrorListener()
-    {
-        return $this->getContainer()->get('sonata.page.kernel.exception_listener');
+    /** @var BackendInterface */
+    protected $backend;
+
+    /** @var BackendInterface */
+    protected $backendRuntime;
+
+    public function __construct(
+        SiteManagerInterface $siteManager,
+        PageManagerInterface $pageManager,
+        SnapshotManagerInterface $snapshotManager,
+        ManagerInterface $blockManager,
+        CmsPageManager $cmsPageManager,
+        ExceptionListener $exceptionListener,
+        BackendInterface $backend,
+        BackendInterface $backendRuntime
+    ) {
+        parent::__construct();
+
+        $this->siteManager = $siteManager;
+        $this->pageManager = $pageManager;
+        $this->snapshotManager = $snapshotManager;
+        $this->blockManager = $blockManager;
+        $this->cmsPageManager = $cmsPageManager;
+        $this->exceptionListener = $exceptionListener;
+        $this->backend = $backend;
+        $this->backendRuntime = $backendRuntime;
     }
 
     /**
@@ -95,10 +84,10 @@ abstract class BaseCommand extends Command
     public function getNotificationBackend($mode)
     {
         if ('async' === $mode) {
-            return $this->getContainer()->get('sonata.notification.backend');
+            return $this->backend;
         }
 
-        return $this->getContainer()->get('sonata.notification.backend.runtime');
+        return $this->backendRuntime;
     }
 
     /**
@@ -113,6 +102,6 @@ abstract class BaseCommand extends Command
             $parameters['id'] = 1 === \count($identifiers) ? current($identifiers) : $identifiers;
         }
 
-        return $this->getSiteManager()->findBy($parameters);
+        return $this->siteManager->findBy($parameters);
     }
 }

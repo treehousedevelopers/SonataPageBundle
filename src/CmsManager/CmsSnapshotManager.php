@@ -113,7 +113,7 @@ class CmsSnapshotManager extends BaseCmsPageManager
         return null;
     }
 
-    protected function getPageBy(?SiteInterface $site = null, $fieldName, $value)
+    protected function getPageBy(SiteInterface $site = null, $fieldName, $value)
     {
         if ('id' === $fieldName) {
             $fieldName = 'pageId';

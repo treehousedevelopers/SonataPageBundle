@@ -18,7 +18,6 @@ use Sonata\BlockBundle\Block\BlockRendererInterface;
 use Sonata\Doctrine\Model\ManagerInterface;
 use Sonata\NotificationBundle\Backend\BackendInterface;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
-use Sonata\PageBundle\CmsManager\CmsPageManager;
 use Sonata\PageBundle\Listener\ExceptionListener;
 use Sonata\PageBundle\Model\PageManagerInterface;
 use Sonata\PageBundle\Model\SiteManagerInterface;
@@ -26,7 +25,6 @@ use Sonata\PageBundle\Model\SnapshotManagerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Migrates the name setting of all blocks into a code setting.
@@ -49,7 +47,7 @@ class RenderBlockCommand extends BaseCommand
         PageManagerInterface $pageManager,
         SnapshotManagerInterface $snapshotManager,
         ManagerInterface $blockManager,
-        CmsPageManager $cmsPageManager,
+        CmsManagerInterface $cmsPageManager,
         ExceptionListener $exceptionListener,
         BackendInterface $backend,
         BackendInterface $backendRuntime,

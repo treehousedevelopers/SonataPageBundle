@@ -42,6 +42,8 @@ class RenderBlockCommand extends BaseCommand
     /** @var BlockRendererInterface */
     private $blockRenderer;
 
+    protected static $defaultName = 'sonata:page:render-block';
+
     public function __construct(
         SiteManagerInterface $siteManager,
         PageManagerInterface $pageManager,
@@ -72,7 +74,6 @@ class RenderBlockCommand extends BaseCommand
 
     public function configure(): void
     {
-        $this->setName('sonata:page:render-block');
         $this->setDescription('Dump page information');
         $this->setHelp(
             <<<HELP

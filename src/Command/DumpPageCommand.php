@@ -36,6 +36,8 @@ class DumpPageCommand extends BaseCommand
     /** @var CmsManagerInterface */
     private $cmsSnapshotManager;
 
+    protected static $defaultName = 'sonata:page:dump-page';
+
     public function __construct(
         SiteManagerInterface $siteManager,
         PageManagerInterface $pageManager,
@@ -62,7 +64,6 @@ class DumpPageCommand extends BaseCommand
 
     public function configure(): void
     {
-        $this->setName('sonata:page:dump-page');
         $this->setDescription('Dump page information');
         $this->setHelp(
             <<<HELP

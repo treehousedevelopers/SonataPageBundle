@@ -36,6 +36,8 @@ final class CreateBlockContainerCommand extends BaseCommand
     /** @var BlockInteractor */
     private $blockInteractor;
 
+    protected static $defaultName = 'sonata:page:create-block-container';
+
     public function __construct(
         SiteManagerInterface $siteManager,
         PageManagerInterface $pageManager,
@@ -63,8 +65,6 @@ final class CreateBlockContainerCommand extends BaseCommand
 
     protected function configure(): void
     {
-        $this->setName('sonata:page:create-block-container');
-
         $this->addArgument('templateCode', InputArgument::REQUIRED, 'Template name according to sonata_page.yml (e.g. default)');
         $this->addArgument('blockCode', InputArgument::REQUIRED, 'Block alias (e.g. content_bottom)');
         $this->addArgument('blockName', InputArgument::OPTIONAL, 'Block name (e.g. Bottom container)');

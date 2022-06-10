@@ -25,9 +25,10 @@ use Symfony\Component\Process\Process;
  */
 class CleanupSnapshotsCommand extends BaseCommand
 {
+    protected static $defaultName = 'sonata:page:cleanup-snapshots';
+
     public function configure(): void
     {
-        $this->setName('sonata:page:cleanup-snapshots');
         $this->setDescription('Cleanups the deprecated snapshots by a given site');
 
         $this->addOption('site', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Site id', null);

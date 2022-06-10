@@ -31,6 +31,8 @@ class MigrateBlockNameSettingCommand extends Command
 {
     public const CONTAINER_TYPE = 'sonata.page.block.container';
 
+    protected static $defaultName = 'sonata:page:migrate-block-setting';
+
     /** @var EntityManagerInterface */
     private $entityManager;
 
@@ -42,7 +44,6 @@ class MigrateBlockNameSettingCommand extends Command
 
     public function configure(): void
     {
-        $this->setName('sonata:page:migrate-block-setting');
         $this->addOption(
             'class',
             null,

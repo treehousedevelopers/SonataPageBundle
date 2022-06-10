@@ -28,10 +28,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class CloneSiteCommand extends BaseCommand
 {
+    protected static $defaultName = 'sonata:page:clone-site';
+
     public function configure(): void
     {
         $this
-            ->setName('sonata:page:clone-site')
             ->setDescription('Clone a complete site including all their pages')
             ->addOption('source-id', 'so', InputOption::VALUE_REQUIRED, 'Source site id', null)
             ->addOption('dest-id', 'd', InputOption::VALUE_REQUIRED, 'Destination site id', null)

@@ -27,6 +27,8 @@ class MigrateToJsonTypeCommand extends Command
     /** @var EntityManagerInterface */
     private $entityManager;
 
+    protected static $defaultName = 'sonata:page:migrate-block-json';
+
     public function __construct(EntityManagerInterface $entityManager)
     {
         parent::__construct();
@@ -35,7 +37,6 @@ class MigrateToJsonTypeCommand extends Command
 
     public function configure(): void
     {
-        $this->setName('sonata:page:migrate-block-json');
         $this->addOption('table', null, InputOption::VALUE_OPTIONAL, 'Block table', 'page__block');
         $this->setDescription('Migrate all block settings to the doctrine JsonType');
     }

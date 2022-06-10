@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Site;
 
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
  * HostByLocaleSiteSelector.
@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
  */
 class HostByLocaleSiteSelector extends BaseSiteSelector
 {
-    public function handleKernelRequest(GetResponseEvent $event): void
+    public function handleKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
         $enabledSites = [];

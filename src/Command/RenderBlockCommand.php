@@ -16,7 +16,6 @@ namespace Sonata\PageBundle\Command;
 use Sonata\BlockBundle\Block\BlockContextManagerInterface;
 use Sonata\BlockBundle\Block\BlockRendererInterface;
 use Sonata\Doctrine\Model\ManagerInterface;
-use Sonata\NotificationBundle\Backend\BackendInterface;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
 use Sonata\PageBundle\Listener\ExceptionListener;
 use Sonata\PageBundle\Model\PageManagerInterface;
@@ -51,8 +50,6 @@ class RenderBlockCommand extends BaseCommand
         ManagerInterface $blockManager,
         CmsManagerInterface $cmsPageManager,
         ExceptionListener $exceptionListener,
-        BackendInterface $backend,
-        BackendInterface $backendRuntime,
         CmsManagerInterface $cmsSnapshotManager,
         BlockContextManagerInterface $blockContextManager,
         BlockRendererInterface $blockRenderer
@@ -63,9 +60,7 @@ class RenderBlockCommand extends BaseCommand
             $snapshotManager,
             $blockManager,
             $cmsPageManager,
-            $exceptionListener,
-            $backend,
-            $backendRuntime
+            $exceptionListener
         );
         $this->cmsSnapshotManager = $cmsSnapshotManager;
         $this->blockContextManager = $blockContextManager;

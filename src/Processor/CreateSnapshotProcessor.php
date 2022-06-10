@@ -11,55 +11,34 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Sonata\PageBundle\Consumer;
+namespace Sonata\PageBundle\Processor;
 
-use Sonata\NotificationBundle\Consumer\ConsumerEvent;
-use Sonata\NotificationBundle\Consumer\ConsumerInterface;
+use Sonata\PageBundle\Model\PageInterface;
 use Sonata\PageBundle\Model\PageManagerInterface;
 use Sonata\PageBundle\Model\SnapshotManagerInterface;
 use Sonata\PageBundle\Model\TransformerInterface;
 
 /**
- * Consumer class to generate a snapshot.
- *
- * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
- *
- * @final since sonata-project/page-bundle 3.26
+ * Consumer service to generate a snapshot.
  */
-class CreateSnapshotConsumer implements ConsumerInterface
+class CreateSnapshotProcessor
 {
-    /**
-     * @var SnapshotManagerInterface
-     */
-    protected $snapshotManager;
+    protected SnapshotManagerInterface $snapshotManager;
+    protected PageManagerInterface $pageManager;
+    protected TransformerInterface $transformer;
 
-    /**
-     * @var PageManagerInterface
-     */
-    protected $pageManager;
-
-    /**
-     * @var TransformerInterface
-     */
-    protected $transformer;
-
-    public function __construct(SnapshotManagerInterface $snapshotManager, PageManagerInterface $pageManager, TransformerInterface $transformer)
-    {
+    public function __construct(
+        SnapshotManagerInterface $snapshotManager,
+        PageManagerInterface $pageManager,
+        TransformerInterface $transformer
+    ) {
         $this->snapshotManager = $snapshotManager;
         $this->pageManager = $pageManager;
         $this->transformer = $transformer;
     }
 
-    public function process(ConsumerEvent $event): void
+    public function process(PageInterface $page): void
     {
-        $pageId = $event->getMessage()->getValue('pageId');
-
-        $page = $this->pageManager->findOneBy(['id' => $pageId]);
-
-        if (!$page) {
-            return;
-        }
-
         // start a transaction
         $this->snapshotManager->getConnection()->beginTransaction();
 

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Sonata\PageBundle\Command;
 
 use Sonata\Doctrine\Model\ManagerInterface;
-use Sonata\NotificationBundle\Backend\BackendInterface;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
 use Sonata\PageBundle\Listener\ExceptionListener;
 use Sonata\PageBundle\Model\PageManagerInterface;
@@ -48,12 +47,6 @@ abstract class BaseCommand extends Command
     /** @var ExceptionListener */
     protected $exceptionListener;
 
-    /** @var BackendInterface */
-    protected $backend;
-
-    /** @var BackendInterface */
-    protected $backendRuntime;
-
     public function __construct(
         SiteManagerInterface $siteManager,
         PageManagerInterface $pageManager,
@@ -61,8 +54,6 @@ abstract class BaseCommand extends Command
         ManagerInterface $blockManager,
         CmsManagerInterface $cmsPageManager,
         ExceptionListener $exceptionListener,
-        BackendInterface $backend,
-        BackendInterface $backendRuntime
     ) {
         parent::__construct();
 
@@ -72,22 +63,6 @@ abstract class BaseCommand extends Command
         $this->blockManager = $blockManager;
         $this->cmsPageManager = $cmsPageManager;
         $this->exceptionListener = $exceptionListener;
-        $this->backend = $backend;
-        $this->backendRuntime = $backendRuntime;
-    }
-
-    /**
-     * @param string $mode
-     *
-     * @return BackendInterface
-     */
-    public function getNotificationBackend($mode)
-    {
-        if ('async' === $mode) {
-            return $this->backend;
-        }
-
-        return $this->backendRuntime;
     }
 
     /**

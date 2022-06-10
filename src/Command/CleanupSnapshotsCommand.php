@@ -13,6 +13,13 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Command;
 
+use Sonata\Doctrine\Model\ManagerInterface;
+use Sonata\PageBundle\CmsManager\CmsManagerInterface;
+use Sonata\PageBundle\Listener\ExceptionListener;
+use Sonata\PageBundle\Model\PageManagerInterface;
+use Sonata\PageBundle\Model\SiteManagerInterface;
+use Sonata\PageBundle\Model\SnapshotManagerInterface;
+use Sonata\PageBundle\Processor\CleanupSnapshotsProcessor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,13 +34,35 @@ class CleanupSnapshotsCommand extends BaseCommand
 {
     protected static $defaultName = 'sonata:page:cleanup-snapshots';
 
+    private CleanupSnapshotsProcessor $cleanupSnapshotsProcessor;
+
+    public function __construct(
+        SiteManagerInterface $siteManager,
+        PageManagerInterface $pageManager,
+        SnapshotManagerInterface $snapshotManager,
+        ManagerInterface $blockManager,
+        CmsManagerInterface $cmsPageManager,
+        ExceptionListener $exceptionListener,
+        CleanupSnapshotsProcessor $cleanupSnapshotsProcessor
+    ) {
+        parent::__construct(
+            $siteManager,
+            $pageManager,
+            $snapshotManager,
+            $blockManager,
+            $cmsPageManager,
+            $exceptionListener,
+        );
+
+        $this->cleanupSnapshotsProcessor = $cleanupSnapshotsProcessor;
+    }
+
     public function configure(): void
     {
         $this->setDescription('Cleanups the deprecated snapshots by a given site');
 
         $this->addOption('site', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Site id', null);
         $this->addOption('base-console', null, InputOption::VALUE_OPTIONAL, 'Base Symfony console command', 'app/console');
-        $this->addOption('mode', null, InputOption::VALUE_OPTIONAL, 'Run the command asynchronously', 'sync');
         $this->addOption('keep-snapshots', null, InputOption::VALUE_OPTIONAL, 'Keep a given count of snapshots per page', 5);
     }
 
@@ -52,10 +81,6 @@ class CleanupSnapshotsCommand extends BaseCommand
             return;
         }
 
-        if (!\in_array($input->getOption('mode'), ['async', 'sync'], true)) {
-            throw new \InvalidArgumentException('Option "mode" is not valid (async|sync).');
-        }
-
         if (!is_numeric($input->getOption('keep-snapshots'))) {
             throw new \InvalidArgumentException('Please provide an integer value for the option "keep-snapshots".');
         }
@@ -65,26 +90,17 @@ class CleanupSnapshotsCommand extends BaseCommand
     {
         foreach ($this->getSites($input) as $site) {
             if ('all' !== $input->getOption('site')) {
-                if ('async' === $input->getOption('mode')) {
-                    $output->write(sprintf('<info>%s</info> - Publish a notification command ...', $site->getName()));
-                } else {
-                    $output->write(sprintf('<info>%s</info> - Cleaning up snapshots ...', $site->getName()));
-                }
+                $output->write(sprintf('<info>%s</info> - Cleaning up snapshots ...', $site->getName()));
 
-                $this->getNotificationBackend($input->getOption('mode'))->createAndPublish('sonata.page.cleanup_snapshots', [
-                    'siteId' => $site->getId(),
-                    'mode' => $input->getOption('mode'),
-                    'keepSnapshots' => $input->getOption('keep-snapshots'),
-                ]);
+                $this->cleanupSnapshotsProcessor->process($site, $input->getOption('keep-snapshots'));
 
                 $output->writeln(' done!');
             } else {
                 $p = new Process(sprintf(
-                    '%s sonata:page:cleanup-snapshots --env=%s --site=%s --mode=%s --keep-snapshots=%s %s',
+                    '%s sonata:page:cleanup-snapshots --env=%s --site=%s --keep-snapshots=%s %s',
                     $input->getOption('base-console'),
                     $input->getOption('env'),
                     $site->getId(),
-                    $input->getOption('mode'),
                     $input->getOption('keep-snapshots'),
                     $input->getOption('no-debug') ? '--no-debug' : ''
                 ));

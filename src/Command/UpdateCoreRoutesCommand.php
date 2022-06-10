@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Sonata\PageBundle\Command;
 
 use Sonata\Doctrine\Model\ManagerInterface;
-use Sonata\NotificationBundle\Backend\BackendInterface;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
 use Sonata\PageBundle\Listener\ExceptionListener;
 use Sonata\PageBundle\Model\PageManagerInterface;
@@ -47,8 +46,6 @@ class UpdateCoreRoutesCommand extends BaseCommand
         ManagerInterface $blockManager,
         CmsManagerInterface $cmsPageManager,
         ExceptionListener $exceptionListener,
-        BackendInterface $backend,
-        BackendInterface $backendRuntime,
         RoutePageGenerator $routePageGenerator
     ) {
         parent::__construct(
@@ -57,9 +54,7 @@ class UpdateCoreRoutesCommand extends BaseCommand
             $snapshotManager,
             $blockManager,
             $cmsPageManager,
-            $exceptionListener,
-            $backend,
-            $backendRuntime
+            $exceptionListener
         );
         $this->routePageGenerator = $routePageGenerator;
     }

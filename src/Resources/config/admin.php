@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 use Sonata\PageBundle\Admin\BlockAdmin;
+use Sonata\PageBundle\Admin\Extension\CreateSnapshotAdminExtension;
 use Sonata\PageBundle\Admin\PageAdmin;
 use Sonata\PageBundle\Admin\SharedBlockAdmin;
 use Sonata\PageBundle\Admin\SiteAdmin;
@@ -142,20 +143,18 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 'sonata.page.controller.site.admin',
                 new ReferenceConfigurator('sonata.page.route.page.generator'),
             ])
-            ->call('setTranslationDomain', ['%sonata.page.admin.site.translation_domain%']);
+            ->call('setTranslationDomain', ['%sonata.page.admin.site.translation_domain%'])
 
-// TODO : fix sonata.notification.backend
-//
-//        ->set('sonata.page.admin.extension.snapshot', CreateSnapshotAdminExtension::class)
-//            ->tag('sonata.admin.extension', [
-//                'target' => 'sonata.page.admin.page',
-//            ])
-//            ->tag('sonata.admin.extension', [
-//                'target' => 'sonata.page.admin.block',
-//            ])
-//            ->args([
-//                new ReferenceConfigurator('sonata.notification.backend'),
-//            ])
-//            ->call('setTranslationDomain', ['%sonata.page.admin.site.translation_domain%'])
-//        ;
+
+        ->set('sonata.page.admin.extension.snapshot', CreateSnapshotAdminExtension::class)
+            ->tag('sonata.admin.extension', [
+                'target' => 'sonata.page.admin.page',
+            ])
+            ->tag('sonata.admin.extension', [
+                'target' => 'sonata.page.admin.block',
+            ])
+            ->args([
+                new ReferenceConfigurator('sonata.page.create_snapshot'),
+            ])
+        ;
 };

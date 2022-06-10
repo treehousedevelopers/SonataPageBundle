@@ -15,7 +15,6 @@ namespace Sonata\PageBundle\Command;
 
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\Doctrine\Model\ManagerInterface;
-use Sonata\NotificationBundle\Backend\BackendInterface;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
 use Sonata\PageBundle\Listener\ExceptionListener;
 use Sonata\PageBundle\Model\PageManagerInterface;
@@ -45,8 +44,6 @@ class DumpPageCommand extends BaseCommand
         ManagerInterface $blockManager,
         CmsManagerInterface $cmsPageManager,
         ExceptionListener $exceptionListener,
-        BackendInterface $backend,
-        BackendInterface $backendRuntime,
         CmsManagerInterface $cmsSnapshotManager
     ) {
         parent::__construct(
@@ -55,9 +52,7 @@ class DumpPageCommand extends BaseCommand
             $snapshotManager,
             $blockManager,
             $cmsPageManager,
-            $exceptionListener,
-            $backend,
-            $backendRuntime
+            $exceptionListener
         );
         $this->cmsSnapshotManager = $cmsSnapshotManager;
     }

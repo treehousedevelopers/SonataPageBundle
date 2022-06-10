@@ -76,7 +76,7 @@ class SonataPageExtension extends Extension implements PrependExtensionInterface
         $loader->load('cache.xml');
         $loader->load('twig.xml');
         $loader->load('http_kernel.xml');
-        $loader->load('consumer.xml');
+        $loader->load('processor.xml');
         $loader->load('validators.xml');
         $loader->load('command.xml');
         $loader->load('slugify.xml');

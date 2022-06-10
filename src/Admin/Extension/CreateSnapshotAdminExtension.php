@@ -16,43 +16,40 @@ namespace Sonata\PageBundle\Admin\Extension;
 use Sonata\AdminBundle\Admin\AbstractAdminExtension;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\NotificationBundle\Backend\BackendInterface;
 use Sonata\PageBundle\Model\PageInterface;
+use Sonata\PageBundle\Processor\CreateSnapshotProcessor;
 
 /**
  * @final since sonata-project/page-bundle 3.26
  */
 class CreateSnapshotAdminExtension extends AbstractAdminExtension
 {
-    /**
-     * @var BackendInterface
-     */
-    protected $backend;
+    protected CreateSnapshotProcessor $createSnapshotProcessor;
 
-    public function __construct(BackendInterface $backend)
+    public function __construct(CreateSnapshotProcessor $createSnapshotProcessor)
     {
-        $this->backend = $backend;
+        $this->createSnapshotProcessor = $createSnapshotProcessor;
     }
 
     public function postUpdate(AdminInterface $admin, $object): void
     {
-        $this->sendMessage($object);
+        $this->createSnapshot($object);
     }
 
     public function postPersist(AdminInterface $admin, $object): void
     {
-        $this->sendMessage($object);
+        $this->createSnapshot($object);
     }
 
     public function postRemove(AdminInterface $admin, object $object): void
     {
-        $this->sendMessage($object);
+        $this->createSnapshot($object);
     }
 
     /**
      * @param PageInterface $object
      */
-    protected function sendMessage($object): void
+    protected function createSnapshot($object): void
     {
         if ($object instanceof BlockInterface && method_exists($object, 'getPage')) {
             $pageId = $object->getPage()->getId();
@@ -62,8 +59,6 @@ class CreateSnapshotAdminExtension extends AbstractAdminExtension
             return;
         }
 
-        $this->backend->createAndPublish('sonata.page.create_snapshot', [
-            'pageId' => $pageId,
-        ]);
+        $this->createSnapshotProcessor->process($pageId);
     }
 }

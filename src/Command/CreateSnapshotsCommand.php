@@ -13,6 +13,13 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Command;
 
+use Sonata\Doctrine\Model\ManagerInterface;
+use Sonata\PageBundle\CmsManager\CmsManagerInterface;
+use Sonata\PageBundle\Listener\ExceptionListener;
+use Sonata\PageBundle\Model\PageManagerInterface;
+use Sonata\PageBundle\Model\SiteManagerInterface;
+use Sonata\PageBundle\Model\SnapshotManagerInterface;
+use Sonata\PageBundle\Processor\CreateSnapshotsProcessor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,13 +36,34 @@ class CreateSnapshotsCommand extends BaseCommand
 {
     protected static $defaultName = 'sonata:page:create-snapshots';
 
+    private CreateSnapshotsProcessor $createSnapshotsProcessor;
+
+    public function __construct(
+        SiteManagerInterface $siteManager,
+        PageManagerInterface $pageManager,
+        SnapshotManagerInterface $snapshotManager,
+        ManagerInterface $blockManager,
+        CmsManagerInterface $cmsPageManager,
+        ExceptionListener $exceptionListener,
+        CreateSnapshotsProcessor $createSnapshotsProcessor
+    ) {
+        parent::__construct(
+            $siteManager,
+            $pageManager,
+            $snapshotManager,
+            $blockManager,
+            $cmsPageManager,
+            $exceptionListener
+        );
+
+        $this->createSnapshotsProcessor = $createSnapshotsProcessor;
+    }
+
     public function configure(): void
     {
         $this->setDescription('Create a snapshots of all pages available');
         $this->addOption('site', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Site id', null);
         $this->addOption('base-console', null, InputOption::VALUE_OPTIONAL, 'Base symfony console command', 'php app/console');
-
-        $this->addOption('mode', null, InputOption::VALUE_OPTIONAL, 'Run the command asynchronously', 'sync');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -55,20 +83,13 @@ class CreateSnapshotsCommand extends BaseCommand
 
         foreach ($this->getSites($input) as $site) {
             if ('all' !== $input->getOption('site')) {
-                if ('async' === $input->getOption('mode')) {
-                    $output->write(sprintf('<info>%s</info> - Publish a notification command ...', $site->getName()));
-                } else {
-                    $output->write(sprintf('<info>%s</info> - Generating snapshots ...', $site->getName()));
-                }
+                $output->write(sprintf('<info>%s</info> - Generating snapshots ...', $site->getName()));
 
-                $this->getNotificationBackend($input->getOption('mode'))->createAndPublish('sonata.page.create_snapshots', [
-                    'siteId' => $site->getId(),
-                    'mode' => $input->getOption('mode'),
-                ]);
+                $this->createSnapshotsProcessor->process($site);
 
                 $output->writeln(' done!');
             } else {
-                $p = new Process(sprintf('%s sonata:page:create-snapshots --env=%s --site=%s --mode=%s %s ', $input->getOption('base-console'), $input->getOption('env'), $site->getId(), $input->getOption('mode'), $input->getOption('no-debug') ? '--no-debug' : ''));
+                $p = new Process(sprintf('%s sonata:page:create-snapshots --env=%s --site=%s %s ', $input->getOption('base-console'), $input->getOption('env'), $site->getId(), $input->getOption('no-debug') ? '--no-debug' : ''));
                 $p->setTimeout(0);
                 $p->run(static function ($type, $data) use ($output): void {
                     $output->write($data, OutputInterface::OUTPUT_RAW);

@@ -13,14 +13,6 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Command;
 
-use Sonata\BlockBundle\Block\BlockContextManagerInterface;
-use Sonata\BlockBundle\Block\BlockRendererInterface;
-use Sonata\Doctrine\Model\ManagerInterface;
-use Sonata\PageBundle\CmsManager\CmsManagerInterface;
-use Sonata\PageBundle\Listener\ExceptionListener;
-use Sonata\PageBundle\Model\PageManagerInterface;
-use Sonata\PageBundle\Model\SiteManagerInterface;
-use Sonata\PageBundle\Model\SnapshotManagerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,40 +24,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RenderBlockCommand extends BaseCommand
 {
-    /** @var CmsManagerInterface */
-    private $cmsSnapshotManager;
-
-    /** @var BlockContextManagerInterface */
-    private $blockContextManager;
-
-    /** @var BlockRendererInterface */
-    private $blockRenderer;
-
     protected static $defaultName = 'sonata:page:render-block';
 
-    public function __construct(
-        SiteManagerInterface $siteManager,
-        PageManagerInterface $pageManager,
-        SnapshotManagerInterface $snapshotManager,
-        ManagerInterface $blockManager,
-        CmsManagerInterface $cmsPageManager,
-        ExceptionListener $exceptionListener,
-        CmsManagerInterface $cmsSnapshotManager,
-        BlockContextManagerInterface $blockContextManager,
-        BlockRendererInterface $blockRenderer
-    ) {
-        parent::__construct(
-            $siteManager,
-            $pageManager,
-            $snapshotManager,
-            $blockManager,
-            $cmsPageManager,
-            $exceptionListener
-        );
-        $this->cmsSnapshotManager = $cmsSnapshotManager;
-        $this->blockContextManager = $blockContextManager;
-        $this->blockRenderer = $blockRenderer;
-    }
 
     public function configure(): void
     {
@@ -94,7 +54,7 @@ HELP
             );
         }
 
-        $managerService = 'sonata.page.cms.snapshot' === $manager ? $this->cmsSnapshotManager : $this->cmsPageManager;
+        $managerService = 'sonata.page.cms.snapshot' === $manager ? $this->getCmsSnapshotManager() : $this->getCmsPageManager();
 
         $block = $managerService->getBlock($input->getArgument('block_id'));
 
@@ -109,7 +69,7 @@ HELP
             $output->writeln(sprintf('   >> %s: %s', $name, json_encode($value)));
         }
 
-        $context = $this->blockContextManager->get($block);
+        $context = $this->getBlockContextManager()->get($block);
 
         $output->writeln("\n<info>BlockContext Information</info>");
         foreach ($context->getSettings() as $name => $value) {
@@ -119,7 +79,7 @@ HELP
         $output->writeln("\n<info>Response Output</info>");
 
         // fake request
-        $output->writeln($this->blockRenderer->render($context));
+        $output->writeln($this->getBlockRenderer()->render($context));
 
         return 0;
     }

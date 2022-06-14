@@ -24,8 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class MigrateToJsonTypeCommand extends Command
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected static $defaultName = 'sonata:page:migrate-block-json';
 

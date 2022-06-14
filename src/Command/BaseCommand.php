@@ -13,62 +13,97 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Command;
 
-use Sonata\Doctrine\Model\ManagerInterface;
+use Psr\Container\ContainerInterface;
+use Sonata\BlockBundle\Block\BlockContextManagerInterface;
+use Sonata\BlockBundle\Block\BlockRendererInterface;
 use Sonata\PageBundle\CmsManager\CmsManagerInterface;
-use Sonata\PageBundle\Listener\ExceptionListener;
+use Sonata\PageBundle\CmsManager\CmsSnapshotManagerInterface;
+use Sonata\PageBundle\Model\BlockInteractorInterface;
+use Sonata\PageBundle\Model\BlockManagerInterface;
 use Sonata\PageBundle\Model\PageManagerInterface;
 use Sonata\PageBundle\Model\SiteManagerInterface;
 use Sonata\PageBundle\Model\SnapshotManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
 /**
  * BaseCommand.
  *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-abstract class BaseCommand extends Command
+abstract class BaseCommand extends Command implements ServiceSubscriberInterface
 {
-    /** @var SiteManagerInterface */
-    protected $siteManager;
+    protected ContainerInterface $locator;
 
-    /** @var PageManagerInterface */
-    protected $pageManager;
-
-    /** @var SnapshotManagerInterface */
-    protected $snapshotManager;
-
-    /** @var ManagerInterface */
-    protected $blockManager;
-
-    /** @var CmsManagerInterface */
-    protected $cmsPageManager;
-
-    /** @var ExceptionListener */
-    protected $exceptionListener;
-
-    public function __construct(
-        SiteManagerInterface $siteManager,
-        PageManagerInterface $pageManager,
-        SnapshotManagerInterface $snapshotManager,
-        ManagerInterface $blockManager,
-        CmsManagerInterface $cmsPageManager,
-        ExceptionListener $exceptionListener,
-    ) {
+    public function __construct(ContainerInterface $locator)
+    {
         parent::__construct();
 
-        $this->siteManager = $siteManager;
-        $this->pageManager = $pageManager;
-        $this->snapshotManager = $snapshotManager;
-        $this->blockManager = $blockManager;
-        $this->cmsPageManager = $cmsPageManager;
-        $this->exceptionListener = $exceptionListener;
+        $this->locator = $locator;
     }
 
-    /**
-     * @return array
-     */
-    protected function getSites(InputInterface $input)
+    public static function getSubscribedServices(): array
+    {
+        return [
+            'sonata.page.manager.site' => SiteManagerInterface::class,
+            'sonata.page.manager.page' => PageManagerInterface::class,
+            'sonata.page.manager.snapshot' => SnapshotManagerInterface::class,
+            'sonata.page.manager.block' => BlockManagerInterface::class,
+            'sonata.page.cms.page' => CmsManagerInterface::class,
+            'sonata.page.cms.snapshot' => CmsSnapshotManagerInterface::class,
+            'sonata.page.block_interactor' => BlockInteractorInterface::class,
+            'sonata.block.context_manager' => BlockContextManagerInterface::class,
+            'sonata.block.renderer' => BlockRendererInterface::class,
+        ];
+    }
+
+    protected function getSiteManager(): SiteManagerInterface
+    {
+        return $this->locator->get('sonata.page.manager.site');
+    }
+
+    protected function getPageManager(): PageManagerInterface
+    {
+        return $this->locator->get('sonata.page.manager.page');
+    }
+
+    protected function getSnapshotManager(): PageManagerInterface
+    {
+        return $this->locator->get('sonata.page.manager.snapshot');
+    }
+
+    protected function getCmsPageManager(): CmsManagerInterface
+    {
+        return $this->locator->get('sonata.page.cms.page');
+    }
+
+    protected function getBlockManager(): BlockManagerInterface
+    {
+        return $this->locator->get('sonata.page.manager.block');
+    }
+
+    protected function getCmsSnapshotManager(): CmsManagerInterface
+    {
+        return $this->locator->get('sonata.page.cms.snapshot');
+    }
+
+    protected function getBlockInteractor(): BlockInteractorInterface
+    {
+        return $this->locator->get('sonata.page.block_interactor');
+    }
+
+    protected function getBlockContextManager(): BlockContextManagerInterface
+    {
+        return $this->locator->get('sonata.block.context_manager');
+    }
+
+    protected function getBlockRenderer(): BlockRendererInterface
+    {
+        return $this->locator->get('sonata.block.renderer');
+    }
+
+    protected function getSites(InputInterface $input): array
     {
         $parameters = [];
         $identifiers = $input->getOption('site');
@@ -77,6 +112,6 @@ abstract class BaseCommand extends Command
             $parameters['id'] = 1 === \count($identifiers) ? current($identifiers) : $identifiers;
         }
 
-        return $this->siteManager->findBy($parameters);
+        return $this->locator->get('sonata.page.manager.site')->findBy($parameters);
     }
 }

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Command;
 
+use InvalidArgumentException;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\PageBundle\Model\PageInterface;
 use Sonata\PageBundle\Model\SiteInterface;
@@ -45,17 +46,17 @@ final class CloneSiteCommand extends BaseCommand
         if (!$input->getOption('source-id')) {
             $this->listAllSites($output);
 
-            throw new \InvalidArgumentException('Please provide a "--source-id=SITE_ID" option.');
+            throw new InvalidArgumentException('Please provide a "--source-id=SITE_ID" option.');
         }
 
         if (!$input->getOption('dest-id')) {
             $this->listAllSites($output);
 
-            throw new \InvalidArgumentException('Please provide a "--dest-id=SITE_ID" option.');
+            throw new InvalidArgumentException('Please provide a "--dest-id=SITE_ID" option.');
         }
 
         if (!$input->getOption('prefix')) {
-            throw new \InvalidArgumentException('Please provide a "--prefix=PREFIX" option.');
+            throw new InvalidArgumentException('Please provide a "--prefix=PREFIX" option.');
         }
     }
 
@@ -69,17 +70,18 @@ final class CloneSiteCommand extends BaseCommand
         }
 
         /** @var SiteInterface $sourceSite */
-        $sourceSite = $this->siteManager->find($input->getOption('source-id'));
+        $sourceSite = $this->getSiteManager()->find($input->getOption('source-id'));
 
         /** @var SiteInterface $destSite */
-        $destSite = $this->siteManager->find($input->getOption('dest-id'));
+        $destSite = $this->getSiteManager()->find($input->getOption('dest-id'));
 
         $pageClones = [];
         $blockClones = [];
 
         $output->writeln('Cloning pages');
+
         /** @var PageInterface[] $pages */
-        $pages = $this->pageManager->findBy([
+        $pages = $this->getPageManager()->findBy([
             'site' => $sourceSite,
         ]);
         foreach ($pages as $page) {
@@ -101,13 +103,13 @@ final class CloneSiteCommand extends BaseCommand
             }
 
             $newPage->setSite($destSite);
-            $this->pageManager->save($newPage);
+            $this->getPageManager()->save($newPage);
 
             $pageClones[$page->getId()] = $newPage;
 
             // Clone page blocks
             /** @var BlockInterface[] $blocks */
-            $blocks = $this->blockManager->findBy([
+            $blocks = $this->getBlockManager()->findBy([
                 'page' => $page,
             ]);
             foreach ($blocks as $block) {
@@ -115,7 +117,7 @@ final class CloneSiteCommand extends BaseCommand
                 $newBlock = clone $block;
                 $newBlock->setPage($newPage);
                 $blockClones[$block->getId()] = $newBlock;
-                $this->blockManager->save($newBlock);
+                $this->getBlockManager()->save($newBlock);
             }
         }
 
@@ -152,12 +154,12 @@ final class CloneSiteCommand extends BaseCommand
                 }
             }
 
-            $this->pageManager->save($newPage, true);
+            $this->getPageManager()->save($newPage, true);
         }
 
         $output->writeln('Fixing block parents');
         foreach ($pageClones as $page) {
-            $blocks = $this->blockManager->findBy([
+            $blocks = $this->getBlockManager()->findBy([
                 'page' => $page,
             ]);
             foreach ($blocks as $block) {
@@ -174,7 +176,7 @@ final class CloneSiteCommand extends BaseCommand
                         $block->setParent(null);
                     }
 
-                    $this->blockManager->save($block, true);
+                    $this->getBlockManager()->save($block, true);
                 }
             }
         }
@@ -191,7 +193,7 @@ final class CloneSiteCommand extends BaseCommand
     {
         $output->writeln(sprintf(' % 5s - % -30s - %s', 'ID', 'Name', 'Url'));
 
-        $sites = $this->siteManager->findAll();
+        $sites = $this->getSiteManager()->findAll();
 
         foreach ($sites as $site) {
             $output->writeln(sprintf(' % 5s - % -30s - %s', $site->getId(), $site->getName(), $site->getUrl()));

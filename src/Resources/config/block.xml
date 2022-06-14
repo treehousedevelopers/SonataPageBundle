@@ -49,5 +49,7 @@
             <argument type="service" id="sonata.page.manager.page"/>
         </service>
         <service id="%sonata.block.manager.interface%" alias="sonata.block.manager" />
+        <service id="Sonata\BlockBundle\Block\BlockContextManagerInterface" alias="sonata.block.context_manager" />
+        <service id="Sonata\BlockBundle\Block\BlockRendererInterface" alias="sonata.block.renderer" />
     </services>
 </container>

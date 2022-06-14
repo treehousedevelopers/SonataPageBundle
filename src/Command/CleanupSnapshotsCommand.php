@@ -13,12 +13,7 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Command;
 
-use Sonata\Doctrine\Model\ManagerInterface;
-use Sonata\PageBundle\CmsManager\CmsManagerInterface;
-use Sonata\PageBundle\Listener\ExceptionListener;
-use Sonata\PageBundle\Model\PageManagerInterface;
-use Sonata\PageBundle\Model\SiteManagerInterface;
-use Sonata\PageBundle\Model\SnapshotManagerInterface;
+use Psr\Container\ContainerInterface;
 use Sonata\PageBundle\Processor\CleanupSnapshotsProcessor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -36,24 +31,9 @@ class CleanupSnapshotsCommand extends BaseCommand
 
     private CleanupSnapshotsProcessor $cleanupSnapshotsProcessor;
 
-    public function __construct(
-        SiteManagerInterface $siteManager,
-        PageManagerInterface $pageManager,
-        SnapshotManagerInterface $snapshotManager,
-        ManagerInterface $blockManager,
-        CmsManagerInterface $cmsPageManager,
-        ExceptionListener $exceptionListener,
-        CleanupSnapshotsProcessor $cleanupSnapshotsProcessor
-    ) {
-        parent::__construct(
-            $siteManager,
-            $pageManager,
-            $snapshotManager,
-            $blockManager,
-            $cmsPageManager,
-            $exceptionListener,
-        );
-
+    public function __construct(ContainerInterface $locator, CleanupSnapshotsProcessor $cleanupSnapshotsProcessor)
+    {
+        parent::__construct($locator);
         $this->cleanupSnapshotsProcessor = $cleanupSnapshotsProcessor;
     }
 
@@ -74,7 +54,7 @@ class CleanupSnapshotsCommand extends BaseCommand
 
             $output->writeln(sprintf(' % 5s - % -30s - %s', 'ID', 'Name', 'Url'));
 
-            foreach ($this->siteManager->findBy([]) as $site) {
+            foreach ($this->getSiteManager()->findBy([]) as $site) {
                 $output->writeln(sprintf(' % 5s - % -30s - %s', $site->getId(), $site->getName(), $site->getUrl()));
             }
 

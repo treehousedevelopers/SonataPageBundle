@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle\Command;
 
+use DateTime;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -80,21 +81,21 @@ EOT
         }
 
         // create the object
-        $site = $this->siteManager->create();
+        $site = $this->getSiteManager()->create();
 
         $site->setName($values['name']);
 
         $site->setRelativePath('/' === $values['relativePath'] ? '' : $values['relativePath']);
 
         $site->setHost($values['host']);
-        $site->setEnabledFrom('-' === $values['enabledFrom'] ? null : new \DateTime($values['enabledFrom']));
-        $site->setEnabledTo('-' === $values['enabledTo'] ? null : new \DateTime($values['enabledTo']));
+        $site->setEnabledFrom('-' === $values['enabledFrom'] ? null : new DateTime($values['enabledFrom']));
+        $site->setEnabledTo('-' === $values['enabledTo'] ? null : new DateTime($values['enabledTo']));
         $site->setIsDefault(\in_array($values['default'], ['true', 1, '1'], true));
         $site->setLocale('-' === $values['locale'] ? null : $values['locale']);
         $site->setEnabled(\in_array($values['enabled'], ['true', 1, '1'], true));
 
-        $info_enabledFrom = $site->getEnabledFrom() instanceof \DateTime ? $site->getEnabledFrom()->format('r') : 'ALWAYS';
-        $info_enabledTo = $site->getEnabledTo() instanceof \DateTime ? $site->getEnabledTo()->format('r') : 'ALWAYS';
+        $info_enabledFrom = $site->getEnabledFrom() instanceof DateTime ? $site->getEnabledFrom()->format('r') : 'ALWAYS';
+        $info_enabledTo = $site->getEnabledTo() instanceof DateTime ? $site->getEnabledTo()->format('r') : 'ALWAYS';
 
         $output->writeln(
             <<<INFO
@@ -115,7 +116,7 @@ INFO
         }
 
         if ($confirmation) {
-            $this->siteManager->save($site);
+            $this->getSiteManager()->save($site);
 
             $output->writeln([
                 '',

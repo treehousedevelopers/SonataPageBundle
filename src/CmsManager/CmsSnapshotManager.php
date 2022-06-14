@@ -28,7 +28,7 @@ use Sonata\PageBundle\Model\TransformerInterface;
  *
  * @final since sonata-project/page-bundle 3.26
  */
-class CmsSnapshotManager extends BaseCmsPageManager
+class CmsSnapshotManager extends BaseCmsPageManager implements CmsSnapshotManagerInterface
 {
     /**
      * @var SnapshotManagerInterface

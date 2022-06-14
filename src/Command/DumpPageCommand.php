@@ -14,12 +14,6 @@ declare(strict_types=1);
 namespace Sonata\PageBundle\Command;
 
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\Doctrine\Model\ManagerInterface;
-use Sonata\PageBundle\CmsManager\CmsManagerInterface;
-use Sonata\PageBundle\Listener\ExceptionListener;
-use Sonata\PageBundle\Model\PageManagerInterface;
-use Sonata\PageBundle\Model\SiteManagerInterface;
-use Sonata\PageBundle\Model\SnapshotManagerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -32,30 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DumpPageCommand extends BaseCommand
 {
-    /** @var CmsManagerInterface */
-    private $cmsSnapshotManager;
-
     protected static $defaultName = 'sonata:page:dump-page';
-
-    public function __construct(
-        SiteManagerInterface $siteManager,
-        PageManagerInterface $pageManager,
-        SnapshotManagerInterface $snapshotManager,
-        ManagerInterface $blockManager,
-        CmsManagerInterface $cmsPageManager,
-        ExceptionListener $exceptionListener,
-        CmsManagerInterface $cmsSnapshotManager
-    ) {
-        parent::__construct(
-            $siteManager,
-            $pageManager,
-            $snapshotManager,
-            $blockManager,
-            $cmsPageManager,
-            $exceptionListener
-        );
-        $this->cmsSnapshotManager = $cmsSnapshotManager;
-    }
 
     public function configure(): void
     {
@@ -113,7 +84,7 @@ HELP
             );
         }
 
-        $managerService = 'sonata.page.cms.snapshot' === $manager ? $this->cmsSnapshotManager : $this->cmsPageManager;
+        $managerService = 'sonata.page.cms.snapshot' === $manager ? $this->getCmsSnapshotManager() : $this->getCmsPageManager();
 
         $page = $managerService->getPageById($input->getArgument('page_id'));
 

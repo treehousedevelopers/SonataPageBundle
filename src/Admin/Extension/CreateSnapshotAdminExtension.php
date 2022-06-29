@@ -52,13 +52,13 @@ class CreateSnapshotAdminExtension extends AbstractAdminExtension
     protected function createSnapshot($object): void
     {
         if ($object instanceof BlockInterface && method_exists($object, 'getPage')) {
-            $pageId = $object->getPage()->getId();
+            $page = $object->getPage();
         } elseif ($object instanceof PageInterface) {
-            $pageId = $object->getId();
+            $page = $object;
         } else {
             return;
         }
 
-        $this->createSnapshotProcessor->process($pageId);
+        $this->createSnapshotProcessor->process($page);
     }
 }

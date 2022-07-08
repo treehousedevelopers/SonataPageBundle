@@ -68,8 +68,7 @@
         "vimeo/psalm": "^4.7.2"
     },
     "conflict": {
-        "sonata-project/core-bundle": "<3.20",
-        "doctrine/doctrine-bundle": ">=3"
+        "sonata-project/core-bundle": "<3.20"
     },
     "suggest": {
         "twig/extra-bundle": "Auto configures the Twig Intl extension"

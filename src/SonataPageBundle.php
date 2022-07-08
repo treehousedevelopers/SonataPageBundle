@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Sonata\PageBundle;
 
-use Sonata\PageBundle\DependencyInjection\Compiler\CacheCompilerPass;
 use Sonata\PageBundle\DependencyInjection\Compiler\CmfRouterCompilerPass;
 use Sonata\PageBundle\DependencyInjection\Compiler\GlobalVariablesCompilerPass;
 use Sonata\PageBundle\DependencyInjection\Compiler\PageServiceCompilerPass;
@@ -37,7 +36,6 @@ class SonataPageBundle extends Bundle
 
     public function build(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new CacheCompilerPass());
         $container->addCompilerPass(new GlobalVariablesCompilerPass());
         $container->addCompilerPass(new PageServiceCompilerPass());
         $container->addCompilerPass(new CmfRouterCompilerPass());

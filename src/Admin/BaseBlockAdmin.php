@@ -20,7 +20,6 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\Cache\CacheManagerInterface;
 use Sonata\PageBundle\Entity\BaseBlock;
 use Sonata\PageBundle\Model\PageInterface;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
@@ -37,11 +36,6 @@ abstract class BaseBlockAdmin extends AbstractAdmin
      * @var BlockServiceManagerInterface
      */
     protected $blockManager;
-
-    /**
-     * @var CacheManagerInterface
-     */
-    protected $cacheManager;
 
     /**
      * @var bool
@@ -71,9 +65,6 @@ abstract class BaseBlockAdmin extends AbstractAdmin
      */
     public function postUpdate($object): void
     {
-        $service = $this->blockManager->get($object);
-
-        $this->cacheManager->invalidate($service->getCacheKeys($object));
     }
 
     /**
@@ -94,9 +85,6 @@ abstract class BaseBlockAdmin extends AbstractAdmin
      */
     public function postPersist($object): void
     {
-        $service = $this->blockManager->get($object);
-
-        $this->cacheManager->invalidate($service->getCacheKeys($object));
     }
 
     /**
@@ -114,11 +102,6 @@ abstract class BaseBlockAdmin extends AbstractAdmin
     public function setBlockManager(BlockServiceManagerInterface $blockManager): void
     {
         $this->blockManager = $blockManager;
-    }
-
-    public function setCacheManager(CacheManagerInterface $cacheManager): void
-    {
-        $this->cacheManager = $cacheManager;
     }
 
     public function setContainerBlockTypes(array $containerBlockTypes): void

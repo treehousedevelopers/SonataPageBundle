@@ -118,16 +118,7 @@ EOF;
                 ->defaultValue('sonata.page.slugify.cocur')
             ->end()
             ->arrayNode('ignore_routes')
-                ->defaultValue([
-                    'sonata_page_cache_esi',
-                    'sonata_page_cache_ssi',
-                    'sonata_page_js_sync_cache',
-                    'sonata_page_js_async_cache',
-                    'sonata_cache_esi',
-                    'sonata_cache_js_async',
-                    'sonata_cache_js_sync',
-                    'sonata_cache_apc',
-                ])
+                ->defaultValue([])
                 ->prototype('scalar')->end()
             ->end()
 
@@ -137,18 +128,6 @@ EOF;
                     'admin(.*)',
                 ])
                 ->prototype('scalar')->end()
-            ->end()
-
-            ->arrayNode('cache_invalidation')
-                ->addDefaultsIfNotSet()
-                ->children()
-                    ->scalarNode('service')->defaultValue('sonata.cache.invalidation.simple')->end()
-                    ->scalarNode('recorder')->defaultValue('sonata.cache.recorder')->end()
-                    ->arrayNode('classes')
-                        ->useAttributeAsKey('id')
-                        ->prototype('scalar')->end()
-                    ->end()
-                ->end()
             ->end()
 
             ->scalarNode('default_page_service')
@@ -301,33 +280,6 @@ EOF;
                     ->end()
                         ->booleanNode('enabled')
                             ->defaultValue(true)
-                        ->end()
-                    ->end()
-                ->end()
-            ->end()
-
-            ->arrayNode('caches')
-                ->children()
-                    ->arrayNode('esi')
-                        ->children()
-                            ->scalarNode('token')
-                                ->info('The default value is auto generated every time')
-                                ->defaultValue(hash('sha256', uniqid((string) mt_rand(), true)))
-                            ->end()
-                            ->scalarNode('version')
-                                ->defaultValue(2)
-                            ->end()
-                            ->arrayNode('servers')
-                                ->prototype('scalar')->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('ssi')
-                        ->children()
-                            ->scalarNode('token')
-                                ->info('The default value is auto generated every time')
-                                ->defaultValue(hash('sha256', uniqid((string) mt_rand(), true)))
-                            ->end()
                         ->end()
                     ->end()
                 ->end()

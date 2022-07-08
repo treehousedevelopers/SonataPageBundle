@@ -82,7 +82,6 @@ class SonataPageExtension extends Extension implements PrependExtensionInterface
         $loader->load('slugify.xml');
 
         $this->configureMultisite($container, $config);
-        $this->configureCache($container, $config);
         $this->configureTemplates($container, $config);
         $this->configureExceptions($container, $config);
         $this->configurePageDefaults($container, $config);
@@ -244,33 +243,6 @@ class SonataPageExtension extends Extension implements PrependExtensionInterface
         $definitions = $config['templates_admin'];
 
         $templateManager->addMethodCall('setTemplates', [$definitions]);
-    }
-
-    /**
-     * Configure the cache options.
-     *
-     * @param ContainerBuilder $container Container builder
-     * @param array            $config    Array of configuration
-     */
-    public function configureCache(ContainerBuilder $container, array $config): void
-    {
-        if (isset($config['caches']['esi'])) {
-            $container
-                ->getDefinition('sonata.page.cache.esi')
-                ->replaceArgument(0, $config['caches']['esi']['token'])
-                ->replaceArgument(1, $config['caches']['esi']['servers'])
-                ->replaceArgument(3, 3 === $config['caches']['esi']['version'] ? 'ban' : 'purge');
-        } else {
-            $container->removeDefinition('sonata.page.cache.esi');
-        }
-
-        if (isset($config['caches']['ssi'])) {
-            $container
-                ->getDefinition('sonata.page.cache.ssi')
-                ->replaceArgument(0, $config['caches']['ssi']['token']);
-        } else {
-            $container->removeDefinition('sonata.page.cache.ssi');
-        }
     }
 
     /**

@@ -18,7 +18,6 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap;
-use Sonata\Cache\CacheManagerInterface;
 use Sonata\Form\Type\DateTimePickerType;
 
 /**
@@ -31,11 +30,6 @@ use Sonata\Form\Type\DateTimePickerType;
 class SnapshotAdmin extends AbstractAdmin
 {
     protected $classnameLabel = 'Snapshot';
-
-    /**
-     * @var CacheManagerInterface
-     */
-    protected $cacheManager;
 
     public function configureListFields(ListMapper $list): void
     {
@@ -60,24 +54,6 @@ class SnapshotAdmin extends AbstractAdmin
             ->add('publicationDateEnd', DateTimePickerType::class, ['required' => false, 'dp_side_by_side' => true]);
     }
 
-    public function postUpdate($object): void
-    {
-        $this->cacheManager->invalidate([
-            'page_id' => $object->getPage()->getId(),
-        ]);
-    }
-
-    public function postPersist($object): void
-    {
-        $this->cacheManager->invalidate([
-            'page_id' => $object->getPage()->getId(),
-        ]);
-    }
-
-    public function setCacheManager(CacheManagerInterface $cacheManager): void
-    {
-        $this->cacheManager = $cacheManager;
-    }
 
     /**
      * @return array<string, string|string[]> [action1 => requiredRole1, action2 => [requiredRole2, requiredRole3]]

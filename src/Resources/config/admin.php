@@ -56,7 +56,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             ->call('addChild', [new ReferenceConfigurator('sonata.page.admin.block'), 'page'])
             ->call('addChild', [new ReferenceConfigurator('sonata.page.admin.snapshot'), 'page'])
             ->call('setPageManager', [new ReferenceConfigurator('sonata.page.manager.page')])
-            ->call('setCacheManager', [new ReferenceConfigurator('sonata.cache.manager')])
             ->call('setSiteManager', [new ReferenceConfigurator('sonata.page.manager.site')])
             ->call('setTranslationDomain', ['%sonata.page.admin.page.translation_domain%'])
 
@@ -80,7 +79,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 'sonata.page.controller.block.admin',
                 '%sonata_block.blocks%',
             ])
-            ->call('setCacheManager', [new ReferenceConfigurator('sonata.cache.manager')])
             ->call('setBlockManager', [new ReferenceConfigurator('sonata.block.manager')])
             ->call('setTranslationDomain', ['%sonata.page.admin.block.translation_domain%'])
             ->call('setContainerBlockTypes', ['%sonata.block.container.types%'])
@@ -103,7 +101,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 'sonata.page.controller.block.admin',
                 '%sonata_block.blocks%',
             ])
-            ->call('setCacheManager', [new ReferenceConfigurator('sonata.cache.manager')])
             ->call('setBlockManager', [new ReferenceConfigurator('sonata.block.manager')])
             ->call('setTranslationDomain', ['%sonata.page.admin.shared_block.translation_domain%'])
             ->call('setContainerBlockTypes', ['%sonata.block.container.types%'])
@@ -124,7 +121,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 '%sonata.page.snapshot.class%',
                 'sonata.page.controller.snapshot.admin',
             ])
-            ->call('setCacheManager', [new ReferenceConfigurator('sonata.cache.manager')])
             ->call('setTranslationDomain', ['SonataPageBundle'])
 
         ->set('sonata.page.admin.site', SiteAdmin::class)

@@ -173,7 +173,7 @@ class Transformer implements TransformerInterface
         $block->setId($content['id']);
         $block->setName($content['name'] ?? '');
         $block->setEnabled($content['enabled']);
-        $block->setPosition($content['position']);
+        $block->setPosition((int)$content['position']);
         $block->setSettings($content['settings']);
         $block->setType($content['type']);
 

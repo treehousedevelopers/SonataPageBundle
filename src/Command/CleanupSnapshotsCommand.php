@@ -72,7 +72,7 @@ class CleanupSnapshotsCommand extends BaseCommand
             if ('all' !== $input->getOption('site')) {
                 $output->write(sprintf('<info>%s</info> - Cleaning up snapshots ...', $site->getName()));
 
-                $this->cleanupSnapshotsProcessor->process($site, $input->getOption('keep-snapshots'));
+                $this->cleanupSnapshotsProcessor->process($site, (int)$input->getOption('keep-snapshots'));
 
                 $output->writeln(' done!');
             } else {
